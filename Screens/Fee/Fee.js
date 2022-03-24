@@ -1,6 +1,9 @@
 import { View, Text, Button, StyleSheet, ScrollView } from 'react-native'
-import { useState } from 'react'
+import { DataTable } from 'react-native-paper';
+import { Plane } from 'react-native-animated-spinkit'
+import { useState, useEffect } from 'react'
 import GlobalColors from '../../Utils/GlobalColors'
+import { infor } from '../../Api/Api'
 const Fee = () => {
   const [fees, setFees] = useState([
     { term: 'kỳ 1', total: '15.000.000', date: '12/12/2019' },
@@ -9,49 +12,161 @@ const Fee = () => {
     { term: 'kỳ 4', total: '15.000.000', date: '12/12/2020' },
     { term: 'kỳ 5', total: '15.000.000', date: '12/12/2021' },
   ])
+  const [isLoading, setIsLoading] = useState(true)
+  const [info, setInfo] = useState(null)
+
+
+  useEffect(() => {
+    var data = {
+      user: '19010040',
+      pass: '09062001',
+      action: 'hoc_phi'
+    }
+    infor(data)
+      .then(res => {
+        setInfo(res.data)
+        setIsLoading(false)
+      })
+      .catch(e => {
+        console.log(e)
+        setIsLoading(false)
+      })
+  }, [])
+
+  if (isLoading || info === null) {
+    return (
+      <View style={styles.spin}>
+        <Plane size={48} color={GlobalColors.orange.color} />
+      </View>
+    )
+  }
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
 
       <View style={styles.containerChild1}>
         <View style={styles.headerChild}>
-          <Text style={{ color: 'white', textAlign: 'center', fontSize: 10 }}>HỌC PHÍ ĐANG PHẢI NỘP</Text>
+          <Text style={{ color: 'white', textAlign: 'center', fontSize: 10 }}>THÔNG KÊ</Text>
         </View>
         <View style={styles.currentFee}>
-          <Text style={{ textAlign: 'center', fontSize: 13, marginTop: 10 }}>Học phí kỳ 6</Text>
-          <Text style={{ textAlign: 'center', fontSize: 25, fontWeight: 'bold', marginVertical: 6 }}>15.000.000</Text>
-          <Text style={{ textAlign: 'center', fontSize: 13 }}>Đến hạn ngày: 12/12/2023</Text>
-          <View style={styles.button}>
-            <Button title='NỘP HỌC PHÍ' color={GlobalColors.blue.color} />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+            <Text style={{ fontWeight: 'bold' }}>Tổng phải nộp: </Text>
+            <Text>{info["tong_phai_nop"]}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15 }}>
+            <Text style={{ fontWeight: 'bold' }}>Tổng đã nộp: </Text>
+            <Text>{info["tong_da_nop"]}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15 }}>
+            <Text style={{ fontWeight: 'bold' }}>Tổng hoàn trả: </Text>
+            <Text>{info["tong_hoan_tra"]}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15 }}>
+            <Text style={{ fontWeight: 'bold' }}>Tổng thừa thiếu: </Text>
+            <Text>{info["tong_thua_thieu"]}</Text>
           </View>
 
         </View>
       </View>
 
-      <View style={{ ...styles.containerChild1, height: '60%', marginTop: 15 }}>
+      <View style={{ ...styles.containerChild1, marginTop: 15 }}>
         <View style={styles.headerChild}>
-          <Text style={{ color: 'white', textAlign: 'center', fontSize: 10 }}>HỌC PHÍ ĐÃ NỘP</Text>
+          <Text style={{ color: 'white', textAlign: 'center', fontSize: 10 }}>TỔNG HỢP CHUNG</Text>
         </View>
-        <View>
-          <View style={styles.doneFee}>
-            <Text>Kỳ học</Text>
-            <Text>Số tiền</Text>
-            <Text>Ngày nộp</Text>
-          </View>
-          <ScrollView style={{ height: '60%' }}>
-            {fees.map((item, index) => (
-              <View key={index} style={styles.doneFee}>
-                <Text>{item.term}</Text>
-                <Text>{item.total}</Text>
-                <Text>{item.date}</Text>
-              </View>
-            ))}
-          </ScrollView>
-          <View style={{ ...styles.button, marginTop: 20 }}>
-            <Button color={GlobalColors.blue.color} title='IN HÓA ĐƠN' />
-          </View>
-        </View>
+        <ScrollView style={{ marginTop: 30 }} horizontal>
+          <DataTable>
+            <DataTable.Header >
+              <DataTable.Title style={{ width: 40 }}>STT</DataTable.Title>
+              <DataTable.Title style={{ width: 150 }}>Khoản thu</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>Số tiền phải nộp</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>Số tiền đã nộp</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>Số tiền hoàn trả</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>Số tiền thiếu/thừa</DataTable.Title>
+            </DataTable.Header>
+            <ScrollView style={{ maxHeight: 250 }} nestedScrollEnabled={true}>
+              {info["chung"].map((item, index) => (
+                <DataTable.Row key={index}>
+                  <DataTable.Cell style={{ width: 40 }} >{item[0]}</DataTable.Cell>
+                  <DataTable.Cell style={{ width: 150 }} >{item[1]}</DataTable.Cell>
+                  <DataTable.Cell style={{ width: 100 }} >{item[2]}</DataTable.Cell>
+                  <DataTable.Cell style={{ width: 100 }} >{item[3]}</DataTable.Cell>
+                  <DataTable.Cell style={{ width: 100 }} >{item[4]}</DataTable.Cell>
+                  <DataTable.Cell style={{ width: 100 }} >{item[5]}</DataTable.Cell>
+                </DataTable.Row>
+              ))}
+            </ScrollView>
+          </DataTable>
+        </ScrollView>
       </View>
-    </View>
+
+      <View style={{ ...styles.containerChild1, marginVertical: 30 }}>
+        <View style={styles.headerChild}>
+          <Text style={{ color: 'white', textAlign: 'center', fontSize: 10 }}>CÁC KHOẢN PHẢI NỘP</Text>
+        </View>
+        <ScrollView style={{ marginTop: 30 }} horizontal>
+          <DataTable>
+            <DataTable.Header >
+              <DataTable.Title style={{ width: 40 }}>STT</DataTable.Title>
+              <DataTable.Title style={{ width: 50 }}>Học kỳ</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>Năm học</DataTable.Title>
+              <DataTable.Title style={{ width: 150 }}>Khoản thu</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>Số tiền phải nộp</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>Số tiền miễn giảm</DataTable.Title>
+            </DataTable.Header>
+            <ScrollView style={{ maxHeight: 250 }} nestedScrollEnabled={true}>
+              <View >
+                {info["phai_nop"].map((item, index) => (
+                  <DataTable.Row key={index}>
+                    <DataTable.Cell style={{ width: 40 }} >{item[0]}</DataTable.Cell>
+                    <DataTable.Cell style={{ width: 50 }} >{item[1]}</DataTable.Cell>
+                    <DataTable.Cell style={{ width: 100 }} >{item[2]}</DataTable.Cell>
+                    <DataTable.Cell style={{ width: 150 }} >{item[3]}</DataTable.Cell>
+                    <DataTable.Cell style={{ width: 100 }} >{item[4]}</DataTable.Cell>
+                    <DataTable.Cell style={{ width: 100 }} >{item[5]}</DataTable.Cell>
+                  </DataTable.Row>
+                ))}
+              </View>
+
+            </ScrollView>
+          </DataTable>
+        </ScrollView>
+      </View>
+
+
+      <View style={{ ...styles.containerChild1, marginBottom: 30 }}>
+        <View style={styles.headerChild}>
+          <Text style={{ color: 'white', textAlign: 'center', fontSize: 10 }}>CÁC BIÊN LAI ĐÃ THU CHI</Text>
+        </View>
+        <ScrollView style={{ marginTop: 30 }} horizontal>
+          <DataTable>
+            <DataTable.Header >
+              <DataTable.Title style={{ width: 40 }}>STT</DataTable.Title>
+              <DataTable.Title style={{ width: 50 }}>Học kỳ</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>Năm học</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>Số phiếu</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>Ngày tháng</DataTable.Title>
+              <DataTable.Title style={{ width: 160 }}>Khoản thu/chi</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>Số tiền</DataTable.Title>
+            </DataTable.Header>
+            <ScrollView style={{ maxHeight: 250 }} nestedScrollEnabled={true}>
+              {info["thu_chi"].map((item, index) => (
+                <DataTable.Row key={index}>
+                  <DataTable.Cell style={{ width: 40 }} >{item[0]}</DataTable.Cell>
+                  <DataTable.Cell style={{ width: 50 }} >{item[1]}</DataTable.Cell>
+                  <DataTable.Cell style={{ width: 100 }} >{item[2]}</DataTable.Cell>
+                  <DataTable.Cell style={{ width: 100 }} >{item[3]}</DataTable.Cell>
+                  <DataTable.Cell style={{ width: 100 }} >{item[4]}</DataTable.Cell>
+                  <DataTable.Cell style={{ width: 160 }} >{item[5]}</DataTable.Cell>
+                  <DataTable.Cell style={{ width: 100 }} >{item[6]}</DataTable.Cell>
+                </DataTable.Row>
+              ))}
+            </ScrollView>
+          </DataTable>
+        </ScrollView>
+      </View>
+
+
+
+    </ScrollView>
   )
 }
 const styles = StyleSheet.create({
@@ -60,7 +175,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     padding: 15,
-    alignItems: 'center'
   },
   header: {
     fontSize: 25,
@@ -110,6 +224,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 30
+  },
+  spin: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 }
 )
