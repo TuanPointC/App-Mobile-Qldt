@@ -11,9 +11,9 @@ import Score from './Screens/Score/Score';
 import Total from './Screens/Total/Total';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import GlobalColors from './Utils/GlobalColors';
-import { useState, createContext } from 'react';
+import { useState } from 'react';
+import { UserContext } from './Context';
 
-export const UserContext = createContext();
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 export default function App() {

@@ -2,7 +2,7 @@ import { View, Text, TextInput, Button, StyleSheet } from 'react-native'
 import { RadioButton } from 'react-native-paper';
 import { useState, useContext } from 'react';
 import GlobalColors from '../../Utils/GlobalColors';
-import { UserContext } from '../../App';
+import { UserContext } from '../../Context';
 
 const Login = () => {
   const userContext = useContext(UserContext)

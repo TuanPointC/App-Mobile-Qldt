@@ -6,7 +6,7 @@ import ScoreDetail from './ScoreDetail';
 const Stack = createNativeStackNavigator()
 const Home = ({ navigation }) => {
   const navigate = () => {
-    navigation.navigate("Điểm_chi_tiết")
+    navigation.navigate("Chi Tiết")
   }
   return (
     <View style={styles.container}>
@@ -42,7 +42,7 @@ const Score = () => {
       })}
     >
       <Stack.Screen name='Điểm' component={Home} />
-      <Stack.Screen name='Điểm_chi_tiết' component={ScoreDetail} />
+      <Stack.Screen name='Chi Tiết' component={ScoreDetail} />
     </Stack.Navigator>
 
   )
