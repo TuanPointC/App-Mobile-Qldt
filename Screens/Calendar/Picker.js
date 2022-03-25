@@ -8,7 +8,7 @@ const Picker = (props) => {
     setVisible(state)
   }
   const choosePicker = (value) => {
-    props.setCurrentTerm(value)
+    props.changeCurrentTerm(value)
     setVisible(false)
   }
   return (

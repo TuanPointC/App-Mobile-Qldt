@@ -5,13 +5,6 @@ import { useState, useEffect } from 'react'
 import GlobalColors from '../../Utils/GlobalColors'
 import { infor } from '../../Api/Api'
 const Fee = () => {
-  const [fees, setFees] = useState([
-    { term: 'kỳ 1', total: '15.000.000', date: '12/12/2019' },
-    { term: 'kỳ 2', total: '15.000.000', date: '12/12/20119' },
-    { term: 'kỳ 3', total: '15.000.000', date: '12/12/2020' },
-    { term: 'kỳ 4', total: '15.000.000', date: '12/12/2020' },
-    { term: 'kỳ 5', total: '15.000.000', date: '12/12/2021' },
-  ])
   const [isLoading, setIsLoading] = useState(true)
   const [info, setInfo] = useState(null)
 
@@ -83,16 +76,20 @@ const Fee = () => {
               <DataTable.Title style={{ width: 100 }}>Số tiền thiếu/thừa</DataTable.Title>
             </DataTable.Header>
             <ScrollView style={{ maxHeight: 250 }} nestedScrollEnabled={true}>
-              {info["chung"].map((item, index) => (
-                <DataTable.Row key={index}>
-                  <DataTable.Cell style={{ width: 40 }} >{item[0]}</DataTable.Cell>
-                  <DataTable.Cell style={{ width: 150 }} >{item[1]}</DataTable.Cell>
-                  <DataTable.Cell style={{ width: 100 }} >{item[2]}</DataTable.Cell>
-                  <DataTable.Cell style={{ width: 100 }} >{item[3]}</DataTable.Cell>
-                  <DataTable.Cell style={{ width: 100 }} >{item[4]}</DataTable.Cell>
-                  <DataTable.Cell style={{ width: 100 }} >{item[5]}</DataTable.Cell>
-                </DataTable.Row>
-              ))}
+              {info["chung"].map((item, index) => {
+                
+                return (                 
+                  <DataTable.Row key={index}>
+                    <DataTable.Cell style={{ width: 40 }} >{item[0]}</DataTable.Cell>
+                    <DataTable.Cell style={{ width: 150 }} >{item[1]}</DataTable.Cell>
+                    <DataTable.Cell style={{ width: 100 }} >{item[2]}</DataTable.Cell>
+                    <DataTable.Cell style={{ width: 100 }} >{item[3]}</DataTable.Cell>
+                    <DataTable.Cell style={{ width: 100 }} >{item[4]}</DataTable.Cell>
+                    <DataTable.Cell style={{ width: 100 }} >{item[5]}</DataTable.Cell>
+                  </DataTable.Row>
+                )
+              }
+              )}
             </ScrollView>
           </DataTable>
         </ScrollView>
