@@ -1,39 +1,52 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native'
-import { Plane } from 'react-native-animated-spinkit'
 import GlobalColors from '../../Utils/GlobalColors'
 import { UserContext } from '../../Context';
 import { useContext } from 'react';
 import { infor } from '../../Api/Api';
 import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoadingScreen from '../LoadingScreen/LoadingScreen';
 const Information = () => {
   const userContext = useContext(UserContext)
   const [isLoading, setIsLoading] = useState(true)
   const [info, setInfo] = useState(null)
-  const LogoutHanlder = () => {
+  const LogoutHanlder = async () => {
     userContext.setUser(null)
+    await AsyncStorage.removeItem("user")
+  }
+  const getUserStored = async () => {
+    var user = JSON.parse(await AsyncStorage.getItem("user"))
+    return user
   }
   useEffect(() => {
-    var data = {
-      user: '19010040',
-      pass: '09062001',
-      action: 'info'
-    }
-    infor(data)
-      .then(res => {
-        setInfo(res.data)
-        setIsLoading(false)
+    getUserStored()
+      .then((user) => {
+        var data = {
+          user: userContext.user.email,
+          pass: userContext.user.password,
+          action: 'info'
+        }
+        infor(data)
+          .then(res => {
+            setInfo(res.data)
+            setIsLoading(false)
+          })
+          .catch(e => {
+            console.log(e)
+          })
       })
-      .catch(e => {
-        console.log(e)
+      .catch((err)=>{
+        console.log(err)
       })
+
+
   }, [])
 
 
   if (isLoading || info === null) {
     return (
-      <View style={styles.spin}>
-        <Plane size={48} color={GlobalColors.orange.color} />
-      </View>
+      // 
+      <LoadingScreen />
     )
   }
 
@@ -42,7 +55,7 @@ const Information = () => {
       <View style={styles.container}>
         <View style={styles.containerChild1}>
           <View style={styles.topInformation}>
-            <Image source={require("../../assets/logoPhenikaa.jpg")} style={styles.image} />
+            <Image source={require("../../assets/Phenikaa.png")} style={styles.image} />
             <View>
               <Text style={styles.TopInformationName}>{info.info["Họ và tên"]}</Text>
               <Text style={{ ...styles.textNormal, textAlign: 'center' }}>MSSV: {info.info["Mã sinh viên"]}</Text>
@@ -61,24 +74,24 @@ const Information = () => {
         <View style={{ ...styles.containerChild1, marginTop: 20 }}>
           <Text style={styles.header}>THÔNG TIN KHÁC</Text>
           <View style={{ marginVertical: 1 }}>
-          <Text style={styles.textNormal}>Ngày sinh: {info.info["Ngày sinh"]}</Text>
+            <Text style={styles.textNormal}>Ngày sinh: {info.info["Ngày sinh"]}</Text>
           </View>
-          <View style={{  marginVertical: 1 }}>
+          <View style={{ marginVertical: 1 }}>
             <Text style={styles.textNormal}>Email: {info.info["Email"]}</Text>
           </View>
           <View style={{ marginVertical: 1 }}>
             <Text style={styles.textNormal}>Dân tộc: {info.info["Dân tộc"]}</Text>
           </View>
           <View style={{ marginVertical: 1 }}>
-          <Text style={styles.textNormal}>Quê quán: {info.info["Nơi thường trú"]}</Text>
+            <Text style={styles.textNormal}>Quê quán: {info.info["Nơi thường trú"]}</Text>
           </View>
-          <View style={{  marginVertical: 1 }}>
+          <View style={{ marginVertical: 1 }}>
             <Text style={styles.textNormal}>Số CMND: {info.info["Số CMND"]}</Text>
           </View>
-          <View style={{  marginVertical: 1 }}>
+          <View style={{ marginVertical: 1 }}>
             <Text style={styles.textNormal}>ĐT cá nhân: {info.info["ĐT cá nhân"]}</Text>
           </View>
-          
+
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} >
               <Text style={{ color: 'white', padding: 7 }}> ĐỔI MẬT KHẨU</Text>

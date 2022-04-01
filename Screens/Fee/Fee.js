@@ -4,33 +4,41 @@ import { Plane } from 'react-native-animated-spinkit'
 import { useState, useEffect } from 'react'
 import GlobalColors from '../../Utils/GlobalColors'
 import { infor } from '../../Api/Api'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoadingScreen from '../LoadingScreen/LoadingScreen';
 const Fee = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [info, setInfo] = useState(null)
 
+  const getUserStored = async () => {
+    var user = JSON.parse(await AsyncStorage.getItem("user"))
+    return user
+  }
 
   useEffect(() => {
-    var data = {
-      user: '19010040',
-      pass: '09062001',
-      action: 'hoc_phi'
-    }
-    infor(data)
-      .then(res => {
-        setInfo(res.data)
-        setIsLoading(false)
+    getUserStored()
+      .then((user) => {
+        var data = {
+          user: user.email,
+          pass: user.password,
+          action: 'hoc_phi'
+        }
+        infor(data)
+          .then(res => {
+            setInfo(res.data)
+            setIsLoading(false)
+          })
+          .catch(e => {
+            console.log(e)
+            setIsLoading(false)
+          })
       })
-      .catch(e => {
-        console.log(e)
-        setIsLoading(false)
-      })
+
   }, [])
 
   if (isLoading || info === null) {
     return (
-      <View style={styles.spin}>
-        <Plane size={48} color={GlobalColors.orange.color} />
-      </View>
+      <LoadingScreen/>
     )
   }
   return (
@@ -77,8 +85,8 @@ const Fee = () => {
             </DataTable.Header>
             <ScrollView style={{ maxHeight: 250 }} nestedScrollEnabled={true}>
               {info["chung"].map((item, index) => {
-                
-                return (                 
+
+                return (
                   <DataTable.Row key={index}>
                     <DataTable.Cell style={{ width: 40 }} >{item[0]}</DataTable.Cell>
                     <DataTable.Cell style={{ width: 150 }} >{item[1]}</DataTable.Cell>

@@ -3,12 +3,14 @@ import { RadioButton } from 'react-native-paper';
 import { useState, useContext } from 'react';
 import GlobalColors from '../../Utils/GlobalColors';
 import { UserContext } from '../../Context';
+import { infor } from '../../Api/Api'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
   const userContext = useContext(UserContext)
-  const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   const [user, setUser] = useState({ email: '', password: '' })
+  const [isShowError, setIsShowError] = useState(false)
   const InputEmail = (e) => {
     setUser({ ...user, email: e })
   }
@@ -16,29 +18,40 @@ const Login = () => {
     setUser({ ...user, password: e })
   }
 
-  const LoginHandler = () => {
-    userContext.setUser(user)
+  const LoginHandler = async () => {
+    var data = {
+      user: user.email,
+      pass: user.password,
+      action: 'login'
+    }
+    infor(data)
+      .then(res => {
+        if (!res.data.status) {
+          setIsShowError(true)
+        }
+        else {
+          AsyncStorage.setItem('user', JSON.stringify(user))
+          AsyncStorage.setItem('avatar', res.data.Avatar)
+          console.log(res.data.Avatar)
+          setIsShowError(false)
+          userContext.setUser(user)
+        }
+      })
+      .catch(e => {
+        console.log(e)
+      })
   }
   return (
     <View style={style.container}>
       <Text style={{ color: GlobalColors.blue.color, fontSize: 18 }}>Đăng nhập vào tài khoản của bạn.</Text>
       <View style={style.subContainer}>
-        <Text style={style.warningText}>Bạn nhập sai email hoặc mật khẩu, Vui lòng thử lại!</Text>
+        <Text style={{ ...style.warningText, display: !isShowError ? 'none' : 'flex' }} >Bạn nhập sai tên tài khoản hoặc mật khẩu, Vui lòng thử lại!</Text>
         <View style={style.inputContainer}>
           <TextInput style={style.input} onChangeText={InputEmail} placeholder='Email/Tài khoản...' />
           <TextInput style={style.input} secureTextEntry onChangeText={InputPassword} placeholder='Mật khẩu...' />
         </View>
         <View style={style.button}>
           <Button title='ĐĂNG NHẬP' onPress={LoginHandler} color={GlobalColors.blue.color} />
-        </View>
-        <View style={style.remember}>
-          <RadioButton
-            color={GlobalColors.blue.color}
-            value="first"
-            status={isEnabled ? 'checked' : 'unchecked'}
-            onPress={toggleSwitch}
-          />
-          <Text style={{ fontSize: 10 }}>Nhớ tài khoản của tôi</Text>
         </View>
       </View>
 

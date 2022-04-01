@@ -7,7 +7,7 @@ const LoadingScreen = () => {
       <View style={styles.subContainer}>
         <Text style={styles.text1}>Tra cứu thông tin</Text>
         <Image
-          source={require("../../assets/logoPhenikaa.jpg")}
+          source={require("../../assets/Phenikaa.png")}
           style={styles.image}
         />
         <View style={styles.text2Container}>
@@ -25,14 +25,14 @@ const LoadingScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop:30,
+    marginTop: 30,
     alignItems: 'center',
     justifyContent: 'space-around',
   },
   subContainer: {
     alignItems: 'center',
     justifyContent: 'space-between',
-    height:'50%'
+    height: '50%'
   },
   text1: {
     color: GlobalColors.blue.color,

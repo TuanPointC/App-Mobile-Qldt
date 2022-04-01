@@ -5,27 +5,36 @@ import { useState, useEffect } from 'react';
 import CalendarDay from './CalendarDay';
 import { infor } from '../../Api/Api';
 import CalendarTest from './CalendarTest';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoadingScreen from '../LoadingScreen/LoadingScreen';
 const Calendar = () => {
   const [visible, setVisible] = useState(false)
   const [subjects, setSubjects] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [currentDay, setCurrentDay] = useState(null)
-
+  const getUserStored = async () => {
+    var user = JSON.parse(await AsyncStorage.getItem("user"))
+    return user
+  }
   useEffect(() => {
-    var data = {
-      user: '19010040',
-      pass: '09062001',
-      action: 'lich_hoc'
-    }
-    infor(data)
-      .then(res => {
-        setSubjects(res.data)
-        setIsLoading(false)
+    getUserStored()
+      .then(user => {
+        var data = {
+          user: user.email,
+          pass: user.password,
+          action: 'lich_hoc'
+        }
+        infor(data)
+          .then(res => {
+            setSubjects(res.data)
+            setIsLoading(false)
+          })
+          .catch(e => {
+            console.log(e)
+            setIsLoading(false)
+          })
       })
-      .catch(e => {
-        console.log(e)
-        setIsLoading(false)
-      })
+
   }, [])
 
   const openCalendarDay = (e) => {
@@ -45,9 +54,7 @@ const Calendar = () => {
   }
   if (isLoading || subjects === null) {
     return (
-      <View style={styles.spin}>
-        <Plane size={48} color={GlobalColors.orange.color} />
-      </View>
+      <LoadingScreen/>
     )
   }
   return (

@@ -2,6 +2,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import GlobalColors from '../../Utils/GlobalColors'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import ScoreDetail from './ScoreDetail';
 const Stack = createNativeStackNavigator()
 const Home = ({ navigation }) => {
@@ -41,7 +42,7 @@ const Score = () => {
         headerTintColor: GlobalColors.orange.color,
       })}
     >
-      <Stack.Screen name='Điểm' component={Home} />
+      <Stack.Screen name='Điểm1' component={Home} />
       <Stack.Screen name='Chi Tiết' component={ScoreDetail} />
     </Stack.Navigator>
 

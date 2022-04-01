@@ -1,5 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
-import LoadingScreen from './Screens/LoadingScreen/LoadingScreen';
+import { StyleSheet } from 'react-native';
 import Login from './Screens/Login/Login';
 import Information from './Screens/Information/Information';
 import Fee from './Screens/Fee/Fee';
@@ -11,13 +10,21 @@ import Score from './Screens/Score/Score';
 import Total from './Screens/Total/Total';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import GlobalColors from './Utils/GlobalColors';
-import { useState } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import { UserContext } from './Context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 export default function App() {
   const [user, setUser] = useState(null)
+  useLayoutEffect(() => {
+    const getAsyncStorage = async () => {
+      var userStored = JSON.parse(await AsyncStorage.getItem('user'))
+      setUser(userStored)
+    }
+    getAsyncStorage()
+  }, [])
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <NavigationContainer >
